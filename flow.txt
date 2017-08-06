@@ -1,0 +1,38 @@
+pick start room
+mark exit(pending)
+
+pick room[i]
+find entrance
+calculate diff = (exit(pending) - entrance) 
+translate entrance by diff
+translate exit by diff
+delete exit(pending)
+translate plane by diff vector
+
+copy all solids of room[i]
+paste into room[i-1] before line 'editor'
+determine last used id and iterate
+
+
+
+
+def grab start room
+def find solid
+def f
+
+
+for each file find solid
+	for each solid find side
+		for each side find plane
+			translate
+
+
+opens original file
+finds our variables line for line
+
+
+search for expression (*)
+	convert string to array of integers
+		manipulate integers
+			convert array back into str
+				
