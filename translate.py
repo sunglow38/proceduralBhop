@@ -2,7 +2,6 @@ import re
 import fileinput
 import sys
 
-# hi
 ## TODO: add arguments: Delta, file. 
     ## Translate file by delta. 
     
