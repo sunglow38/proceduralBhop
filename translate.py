@@ -13,7 +13,6 @@ def translate():
     for line in fileinput.input(files=(filename), inplace=True):
             planar = re.findall(regexp, line)
             if planar:
-                # print("Current Line: ", fileinput.lineno(), file=sys.stderr)
                 print('-' * 10, file=sys.stderr)
                 for vertex in planar:
                     new = vertex.split(' ')

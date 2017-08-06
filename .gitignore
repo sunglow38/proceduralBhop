@@ -1,2 +1,1 @@
-#python cache
-*.pyc
+*.py[cod]
