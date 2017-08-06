@@ -2,8 +2,6 @@ import re
 import fileinput
 import sys
 
-# filename = r"C:\Users\Highquality\Documents\Source Maps\pyEnt\notSimple.vmf"
-# filename = r"C:\Users\Highquality\Documents\Source Maps\pyEnt\pyEntCorridor2.vmf"
 ## TODO: add arguments: Delta, file. 
     ## Translate file by delta. 
     
