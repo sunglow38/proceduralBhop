@@ -1,6 +1,6 @@
 # vmfs, vmxs, and texts
-*.vmf
-*.vmx
+.vmf
+.vmx
 todo.txt
 
 # Byte-compiled / optimized / DLL files
