@@ -5,8 +5,8 @@ import vdf
 import re
 import numpy as np
 
-stage0 = r'stage_001.vmf'
-stage1 = r'stage_002.vmf'
+stage0 = r'stages\stage_001.vmf'
+stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
 
