@@ -1,0 +1,11 @@
+Functions
+    pick random file
+    initial stage
+    generate (x) amount of stages
+
+generate unique entity ID's
+
+Polishing
+    errors and exception catching
+    commenting
+    Maybe fix how translating origin works

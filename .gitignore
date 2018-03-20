@@ -1,7 +1,7 @@
 # vmfs, vmxs, and texts
     *.vmf
     *.vmx
-    *.txt
+    todo.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
