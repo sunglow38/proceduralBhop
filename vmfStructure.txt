@@ -1,0 +1,40 @@
+Notation        Description
+int	            Any integer value.
+dec	            Any decimal value.
+sz	            Any string of characters.
+bool	        A Boolean value of true/false in binary.
+vertex	        An XYZ location given by 3 decimal values separated by spaces.
+rgb	            A color value using 3 integers between 0 and 255 separated by spaces corresponding to the Red                       channel, Green channel, and Blue channel, respectively
+
+--------- VMF Structure Values of Interest ----------
+World {
+    id(int)
+    "id" "1"
+    Solid {
+        id(int)
+        "id" "1"
+        side {
+            id(int)
+            "id" "1"
+            plane ((vertex) (vertex) (vertex))
+            "plane" "(0 0 0) (0 0 0) (0 0 0)"
+        }
+    }
+}
+
+Entity {
+    id(int)
+    "id" "2"
+    origin(vertex)
+    "origin" "-512 0 0"
+    Solid {
+        id(int)
+        "id" "2"
+        side {
+            id(int)
+            "id" "2"
+            plane ((vertex) (vertex) (vertex))
+            "plane" "(0 0 0) (0 0 0) (0 0 0)"
+        }
+    }
+}

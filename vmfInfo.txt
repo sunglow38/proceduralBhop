@@ -4,8 +4,11 @@ Website: https://developer.valvesoftware.com/wiki/VMF_documentation
 "It is possible to define multiple world Classes, but Hammer will condense them into one single definition, adding the solids and groups of the additional world classes into the first, and using the "latest" properties; that is, if the first world has ("A" "1") and ("B" "2") but the second world only has ("B" "3"),
 the new world will have ("A" "1") and ("B" "3")."
 
-On Solids KeyValue 'id':
-    "A unique value among other solids' IDs, Identical values will cause weird minor errors"
+On KeyValue 'id':
+    Worlds: A unique value among other world Class ids.
+    Solids: A unique value among other solids' IDs, Identical values will cause weird minor errors
+    Sides: A unique value among other sides ids. Identical values will cause weird minor errors.
+    Entities: This is a unique number among other entity ids.
 
 "The BSP file name must not exceed 30 characters, with the ".bsp" extension included"
 
