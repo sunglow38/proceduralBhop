@@ -9,38 +9,6 @@ add origin class
     origin(vertex)
     "origin" "-512 0 0"
 
---------- VMF Structure Values of Interest ----------
-World {
-    id(int)
-    "id" "1"
-    Solid {
-        id(int)
-        "id" "1"
-        side {
-            id(int)
-            "id" "1"
-            plane ((vertex) (vertex) (vertex))
-            "plane" "(0 0 0) (0 0 0) (0 0 0)"
-        }
-    }
-}
-
-Entity {
-    id(int)
-    "id" "2"
-    origin(vertex)
-    "origin" "-512 0 0"
-    Solid {
-        id(int)
-        "id" "2"
-        side {
-            id(int)
-            "id" "2"
-            plane ((vertex) (vertex) (vertex))
-            "plane" "(0 0 0) (0 0 0) (0 0 0)"
-        }
-    }
-}
 
 Solid IDs must be unique (assumed to be all Solids in file)
 Side IDs must be unique
