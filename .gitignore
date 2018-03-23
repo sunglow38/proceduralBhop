@@ -6,4 +6,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-
+#custom
+flowchart.txt
+stages/stageGen.vmf
