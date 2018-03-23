@@ -1,22 +1,50 @@
+import re
 import time
+
+import numpy as np
+import vdf
+
 start_time = time.time()
 
-import vdf
-import re
-import numpy as np
 
 stage0 = r'stages\stage_001.vmf'
 stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
 
+
+class Plane(list):
+    def __init__(self, data=None):
+        stripParenth = r"\((.*?)\)"
+        if data is not None:
+            if isinstance(data, list):
+                self.plane = data
+            else:
+                self.plane = re.findall(stripParenth, data)
+
+    def __repr__(self):
+        return self.plane
+
+    def __str__(self):
+        return str(self.plane)
+
+    def __len__(self):
+        return len(self.plane)
+
+    def __add__(self, other):
+        return
+
+    def __getitem__(self, idx):
+        return self.plane[idx]
+
+
 class Stage(vdf.VDFDict):
 
-    def __init__(self, data=None):    
-        if not isinstance(data, vdf.VDFDict): ##checks if data is already a VDFDict
-           data = vdf.parse(open(data), mapper=vdf.VDFDict, merge_duplicate_keys=False)
-           self.d = vdf.VDFDict(data)
-        else: 
+    def __init__(self, data=None):
+        if not isinstance(data, vdf.VDFDict):  # checks if data is already a VDFDict
+            data = vdf.parse(open(data), mapper=vdf.VDFDict, merge_duplicate_keys=False)
+            self.d = vdf.VDFDict(data)
+        else:
             self.d = data
 
     def __repr__(self):
@@ -25,12 +53,13 @@ class Stage(vdf.VDFDict):
     def __len__(self):
         return len(self.d)
 
-    def asVDF(self): #returns Stage(obj) call as a VDFDict type rather than a Stage type 
+    def asVDF(self):  # returns Stage(obj) call as a VDFDict type rather than a Stage type
         return self.d
 
-    def get_key_recursive(self, key): #returns list of all values for a specified key in the object
+    # returns list of all values for a specified key in the object
+    def get_key_recursive(self, key):
         def gen_dict_extract(key, var):
-            if hasattr(var,'iteritems'):
+            if hasattr(var, 'iteritems'):
                 for k, v in var.iteritems():
                     if k == key:
                         yield v
@@ -60,7 +89,7 @@ class Stage(vdf.VDFDict):
 
     def entranceIndex(self):
         return self.entrance()['idx']
-    
+
     def exit(self):
         if hasattr(self.d, 'iteritems'):
             idx = 0
@@ -79,11 +108,20 @@ class Stage(vdf.VDFDict):
     def exitIndex(self):
         return self.exit()['idx']
 
-    def prepare_next(self, stageNext): #If stageA -> stageB then command would be stageA.prepare_next(stageB)
-        stripParenth =  r"\((.*?)\)"
+    def idMax(self):
+        idList = self.get_key_recursive('id')
+        for i in range(len(idList)):
+            if isinstance(idList[i], str):
+                idList[i] = int(idList[i])
+        return max(idList)
+
+    # If stageA -> stageB then command would be stageA.prepare_next(stageB)
+    def prepare_next(self, stageNext):
+        stripParenth = r"\((.*?)\)"
         delta = self.exitOrigin() - stageNext.entranceOrigin()
-        stageNext = stageNext.asVDF() 
-        idCount = len(self.get_key_recursive('id'))
+        stageNext = stageNext.asVDF()
+        stageWorld = Stage(self.d['world'])
+        idCount = stageWorld.idMax()
 
         del stageNext[self.entranceIndex(), 'entity']
 
@@ -93,29 +131,32 @@ class Stage(vdf.VDFDict):
             entityIdx = 0
             for i, j in stageNext.iteritems():
                 if i == 'world':
-                    for k, n in j.iteritems():                  
+                    for k, n in j.iteritems():
                         if k == 'solid':
                             for m, x in n.iteritems():
                                 if m == 'side':
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
-                                            vertex = re.findall(stripParenth, v)                                  
+                                            vertex = re.findall(
+                                                stripParenth, v)
                                             if vertex:
                                                 for i in range(0, len(vertex)):
                                                     coord = vertex[i]
                                                     coord = coord.split(' ')
-                                                    coord = np.array(list(map(int, coord)))
+                                                    coord = np.array(
+                                                        list(map(int, coord)))
                                                     coord = coord + delta
                                                     coord = map(str, coord)
                                                     coord = ' '.join(coord)
-                                                    coord = re.sub(r".*", r'(\g<0>)', coord)
-                                                    vertex[i] = coord                                       
+                                                    coord = re.sub(
+                                                        r".*", r'(\g<0>)', coord)
+                                                    vertex[i] = coord
                                                 vertex = ' '.join(vertex)
-                                    del stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['plane']
-                                    stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['plane'] = vertex
+                                    del stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane']
+                                    stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane'] = vertex
                                     sideIdx += 1
                             del stageNext['world'][solidIdx, 'solid']['id']
-                            stageNext['world'][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx                                      
+                            stageNext['world'][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx
                             solidIdx += 1
                             sideIdx = 0
 
@@ -130,12 +171,13 @@ class Stage(vdf.VDFDict):
                     del stageNext[entityIdx, i]['origin']
                     stageNext[entityIdx, i]['origin'] = origin
                     entityIdx += 1
-            del(stageNext['cameras'], stageNext['cordon'], stageNext['visgroups'], stageNext['viewsettings'], stageNext['versioninfo'])
+            del(stageNext['cameras'], stageNext['cordon'], stageNext['visgroups'],
+                stageNext['viewsettings'], stageNext['versioninfo'])
             return(stageNext)
-    
+
     def append_stage(self, stageN):
         stage = self.d
-        del stage[self.exitIndex(), 'entity']        
+        del stage[self.exitIndex(), 'entity']
         for i in stageN['world'].get_all_for('solid'):
             stage['world']['solid'] = i
         for i in stageN.get_all_for('entity'):
@@ -143,20 +185,22 @@ class Stage(vdf.VDFDict):
 
         return stage
 
+
+
 stageMain = Stage(stage0)
 stageNext = Stage(stage1)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
-stageMain = Stage(stageMain)
-stageNext = Stage(stage2)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageMain = Stage(stageMain)
+# stageNext = Stage(stage2)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
-stageMain = Stage(stageMain)
-stageNext = Stage(stage3)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageMain = Stage(stageMain)
+# stageNext = Stage(stage3)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
-vdf.dump(stageMain, open(r'stageGen.vmf', 'w'), pretty=True)
+vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
 print("--- %s seconds ---" % (time.time() - start_time))
