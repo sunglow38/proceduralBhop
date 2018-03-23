@@ -6,12 +6,10 @@ import vdf
 
 start_time = time.time()
 
-
 stage0 = r'stages\stage_001.vmf'
 stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
-
 
 class Plane(list):
     def __init__(self, data=None):
@@ -37,24 +35,15 @@ class Plane(list):
     def __getitem__(self, idx):
         return self.plane[idx]
 
-
 class Stage(vdf.VDFDict):
 
     def __init__(self, data=None):
-        if not isinstance(data, vdf.VDFDict):  # checks if data is already a VDFDict
+        super().__init__()
+        if not isinstance(data, vdf.VDFDict):  # checks if data is not already a VDFDict
             data = vdf.parse(open(data), mapper=vdf.VDFDict, merge_duplicate_keys=False)
-            self.d = vdf.VDFDict(data)
+            self.update(data)
         else:
-            self.d = data
-
-    def __repr__(self):
-        return self.d
-
-    def __len__(self):
-        return len(self.d)
-
-    def asVDF(self):  # returns Stage(obj) call as a VDFDict type rather than a Stage type
-        return self.d
+            self.update(data)
 
     # returns list of all values for a specified key in the object
     def get_key_recursive(self, key):
@@ -70,12 +59,12 @@ class Stage(vdf.VDFDict):
                         for d in v:
                             for result in gen_dict_extract(key, d):
                                 yield result
-        return list(gen_dict_extract(key, self.d))
+        return list(gen_dict_extract(key, self))
 
     def entrance(self):
-        if hasattr(self.d, 'iteritems'):
+        if hasattr(self, 'iteritems'):
             idx = 0
-            for i, j in self.d.iteritems():
+            for i, j in self.iteritems():
                 if i == 'entity':
                     for k in j.itervalues():
                         if k == 'entry':
@@ -91,9 +80,9 @@ class Stage(vdf.VDFDict):
         return self.entrance()['idx']
 
     def exit(self):
-        if hasattr(self.d, 'iteritems'):
+        if hasattr(self, 'iteritems'):
             idx = 0
-            for i, j in self.d.iteritems():
+            for i, j in self.iteritems():
                 if i == 'entity':
                     for k in j.itervalues():
                         if k == 'exit':
@@ -108,19 +97,24 @@ class Stage(vdf.VDFDict):
     def exitIndex(self):
         return self.exit()['idx']
 
-    def idMax(self):
+    def ids(self):
         idList = self.get_key_recursive('id')
         for i in range(len(idList)):
             if isinstance(idList[i], str):
                 idList[i] = int(idList[i])
-        return max(idList)
+        return idList
+
+    def idLen(self):
+        return len(self.ids())
+
+    def idMax(self):
+        return max(self.ids())
 
     # If stageA -> stageB then command would be stageA.prepare_next(stageB)
     def prepare_next(self, stageNext):
         stripParenth = r"\((.*?)\)"
         delta = self.exitOrigin() - stageNext.entranceOrigin()
-        stageNext = stageNext.asVDF()
-        stageWorld = Stage(self.d['world'])
+        stageWorld = Stage(self['world'])
         idCount = stageWorld.idMax()
 
         del stageNext[self.entranceIndex(), 'entity']
@@ -182,7 +176,7 @@ class Stage(vdf.VDFDict):
         Thus the newest stages properties will be the main stage properties
         """
 
-        stage = self.d
+        stage = self
         del stage[self.exitIndex(), 'entity']
         stage['world'] = stageN['world']
         for i in stageN.get_all_for('entity'):
@@ -197,15 +191,14 @@ stageNext = Stage(stage1)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
-stageMain = Stage(stageMain)
 stageNext = Stage(stage2)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
-stageMain = Stage(stageMain)
 stageNext = Stage(stage3)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
+open(r'stages\stageGen.vmf', 'w').close()
 vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
 print("--- %s seconds ---" % (time.time() - start_time))
