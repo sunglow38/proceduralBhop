@@ -176,10 +176,15 @@ class Stage(vdf.VDFDict):
             return(stageNext)
 
     def append_stage(self, stageN):
+        """
+        Hammer will take multiple World class definitions and merge solids and groups
+        Properties are taken from the last instance of a World class
+        Thus the newest stages properties will be the main stage properties
+        """
+
         stage = self.d
         del stage[self.exitIndex(), 'entity']
-        for i in stageN['world'].get_all_for('solid'):
-            stage['world']['solid'] = i
+        stage['world'] = stageN['world']
         for i in stageN.get_all_for('entity'):
             stage['entity'] = i
 
@@ -192,15 +197,15 @@ stageNext = Stage(stage1)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
-# stageMain = Stage(stageMain)
-# stageNext = Stage(stage2)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
+stageMain = Stage(stageMain)
+stageNext = Stage(stage2)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
 
-# stageMain = Stage(stageMain)
-# stageNext = Stage(stage3)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
+stageMain = Stage(stageMain)
+stageNext = Stage(stage3)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
 
 vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
 print("--- %s seconds ---" % (time.time() - start_time))
