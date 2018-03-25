@@ -11,29 +11,33 @@ stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
 
-class Plane(list):
-    def __init__(self, data=None):
-        stripParenth = r"\((.*?)\)"
-        if data is not None:
-            if isinstance(data, list):
-                self.plane = data
-            else:
-                self.plane = re.findall(stripParenth, data)
+# stripParenth = r"\((.*?)\)"
+# regexVertex = r"\(?(\d+\.?\d*)\s(\d+\.?\d*)\s(\d+\.?\d*)\)?"
+# regexPlane = r"(\(\d+\.?\d*\s\d+\.?\d*\s\d+\.?\d*\))+"
 
-    def __repr__(self):
-        return self.plane
 
-    def __str__(self):
-        return str(self.plane)
 
-    def __len__(self):
-        return len(self.plane)
+def vertexArray(data):
+    regexPlane = re.compile(r"""
+                                (\d+\.?\d*)\s #X [Group 0]
+                                (\d+\.?\d*)\s #Y [Group 1]
+                                (\d+\.?\d*) #Z [Group 2]
+                                """, re.VERBOSE)
+    stripParenth = re.compile(r"\((.*?)\)")
+    vertex = stripParenth.findall(data) #The first character in string is skipped to check whether its a plane or origin object
+    if vertex:
+        return vertex
 
-    def __add__(self, other):
-        return
+    return 0
 
-    def __getitem__(self, idx):
-        return self.plane[idx]
+
+# planeS = "(0 0 0)"
+planeS = "(0 125 0) (13 0 0) (0.5 0 0)"
+originS = "0 12.3 124"
+planeC = vertexArray(planeS)
+originC = vertexArray(originS)
+print("Plane Class: ", planeC)
+print("Origin Class: ", originC)
 
 class Stage(vdf.VDFDict):
 
@@ -186,19 +190,20 @@ class Stage(vdf.VDFDict):
 
 
 
-stageMain = Stage(stage0)
-stageNext = Stage(stage1)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageMain = Stage(stage0)
+# stageNext = Stage(stage1)
 
-stageNext = Stage(stage2)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
-stageNext = Stage(stage3)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageNext = Stage(stage2)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
-open(r'stages\stageGen.vmf', 'w').close()
-vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
+# stageNext = Stage(stage3)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
+
+# open(r'stages\stageGen.vmf', 'w').close()
+# vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
 print("--- %s seconds ---" % (time.time() - start_time))
