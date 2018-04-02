@@ -11,29 +11,26 @@ stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
 
-class Plane(list):
+class Vertex(obj):
     def __init__(self, data=None):
-        stripParenth = r"\((.*?)\)"
-        if data is not None:
-            if isinstance(data, list):
-                self.plane = data
-            else:
-                self.plane = re.findall(stripParenth, data)
 
-    def __repr__(self):
-        return self.plane
 
-    def __str__(self):
-        return str(self.plane)
+class Plane(str):
+    def __init__(self, data=None):
+        super().__init__()
 
-    def __len__(self):
-        return len(self.plane)
+    # def __len__(self):
+    #     return len(self.plane)
 
     def __add__(self, other):
         return
 
-    def __getitem__(self, idx):
-        return self.plane[idx]
+    # def __getitem__(self, idx):
+    #     return self.plane[idx]
+
+p = '(-1 0 0) (0 0 0) (0 0 0)'
+p2 = '(0 -12 0) (18 43 0) (0 20 30)'
+print(Plane(p))
 
 class Stage(vdf.VDFDict):
 
@@ -131,8 +128,7 @@ class Stage(vdf.VDFDict):
                                 if m == 'side':
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
-                                            vertex = re.findall(
-                                                stripParenth, v)
+                                            vertex = re.findall(stripParenth, v)
                                             if vertex:
                                                 for i in range(0, len(vertex)):
                                                     coord = vertex[i]
