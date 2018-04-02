@@ -139,8 +139,6 @@ class Stage(vdf.VDFDict):
         idCount = 0
 
         del stageNext[self.entranceIndex(), 'entity']
-        del stageNext['world']['id']
-        stageNext['world']['id'] = 2
 
         if hasattr(stageNext, 'iteritems'):
             solidIdx = 0
@@ -169,6 +167,7 @@ class Stage(vdf.VDFDict):
 
                 if i == 'entity':
                     solidIdx = 0
+                    sideIdx = 0
                     idCount += 1
                     origin = False
                     for x, n in j.iteritems():
@@ -182,10 +181,11 @@ class Stage(vdf.VDFDict):
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
                                             newPlane = translatePlane(v, delta)
-                                    del stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id']
-                                    stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id'] = stageIDs + 1 + idCount
+                                    del stageNext[entityIdx, i][solidIdx, 'solid'][sideIdx, 'side']['id']
+                                    stageNext[entityIdx, i][solidIdx, 'solid'][sideIdx, 'side']['id'] = stageIDs + 1 + idCount
                                     del stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane']
                                     stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane'] = newPlane
+                                    sideIdx += 1
                             del stageNext[entityIdx, i][solidIdx, 'solid']['id']
                             stageNext[entityIdx, i][solidIdx, 'solid']['id'] = stageIDs + 1 + idCount
                             solidIdx += 1
