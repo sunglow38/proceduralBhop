@@ -11,18 +11,6 @@ stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
 
-<<<<<<< HEAD
-class Vertex(obj):
-    def __init__(self, data=None):
-
-
-class Plane(str):
-    def __init__(self, data=None):
-        super().__init__()
-
-    # def __len__(self):
-    #     return len(self.plane)
-=======
 # stripParenth = r"\((.*?)\)"
 # regexVertex = r"\(?(\d+\.?\d*)\s(\d+\.?\d*)\s(\d+\.?\d*)\)?"
 # regexPlane = r"(\(\d+\.?\d*\s\d+\.?\d*\s\d+\.?\d*\))+"
@@ -39,18 +27,9 @@ def vertexArray(data):
     vertex = stripParenth.findall(data) #The first character in string is skipped to check whether its a plane or origin object
     if vertex:
         return vertex
->>>>>>> 3095f8cf44d7c5b9408c2ed3e41537961461b911
 
     return 0
 
-<<<<<<< HEAD
-    # def __getitem__(self, idx):
-    #     return self.plane[idx]
-
-p = '(-1 0 0) (0 0 0) (0 0 0)'
-p2 = '(0 -12 0) (18 43 0) (0 20 30)'
-print(Plane(p))
-=======
 
 # planeS = "(0 0 0)"
 planeS = "(0 125 0) (13 0 0) (0.5 0 0)"
@@ -59,7 +38,6 @@ planeC = vertexArray(planeS)
 originC = vertexArray(originS)
 print("Plane Class: ", planeC)
 print("Origin Class: ", originC)
->>>>>>> 3095f8cf44d7c5b9408c2ed3e41537961461b911
 
 class Stage(vdf.VDFDict):
 
