@@ -125,12 +125,16 @@ class Stage(vdf.VDFDict):
     def idMax(self):
         return max(self.ids())
 
+
+
+
     # If stageA -> stageB then command would be stageA.prepare_next(stageB)
     def prepare_next(self, stageNext):
         # stripParenth = r"\((.*?)\)"
         delta = self.exitOrigin() - stageNext.entranceOrigin()
         stageWorld = Stage(self['world'])
-        idCount = stageWorld.idMax()
+        stageIDs = stageWorld.idMax()
+        idCount = 0
 
         del stageNext[self.entranceIndex(), 'entity']
 
@@ -142,36 +146,47 @@ class Stage(vdf.VDFDict):
                 if i == 'world':
                     for k, n in j.iteritems():
                         if k == 'solid':
+                            idCount += 1
                             for m, x in n.iteritems():
                                 if m == 'side':
+                                    idCount += 1
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
                                             newPlane = translatePlane(v, delta)
+                                    del stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id']
+                                    stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id'] = stageIDs + 1 + idCount
                                     del stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane']
                                     stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane'] = newPlane
                                     sideIdx += 1
                             del stageNext['world'][solidIdx, 'solid']['id']
-                            stageNext['world'][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx
+                            stageNext['world'][solidIdx, 'solid']['id'] = stageIDs + 1 + idCount
                             solidIdx += 1
                             sideIdx = 0
 
                 if i == 'entity':
+                    idCount += 1
                     for x, n in j.iteritems():
                         if x == 'origin':
                             origin = translateOrigin(n, delta)
                         if x == 'solid':
+                            idCount += 1
                             for m, x in n.iteritems():
                                 if m == 'side':
+                                    idCount += 1
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
                                             newPlane = translatePlane(v, delta)
+                                    del stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id']
+                                    stageNext['world'][solidIdx, 'solid'][sideIdx, 'side']['id'] = stageIDs + 1 + idCount
                                     del stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane']
                                     stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane'] = newPlane
                             del stageNext[entityIdx, i][solidIdx, 'solid']['id']
-                            stageNext[entityIdx, i][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx
+                            stageNext[entityIdx, i][solidIdx, 'solid']['id'] = stageIDs + 1 + idCount
                             solidIdx += 1
                             sideIdx = 0
 
+                    del stageNext[entityIdx, i]['id']
+                    stageNext[entityIdx, i]['id'] = stageIDs + 1 + idCount
                     del stageNext[entityIdx, i]['origin']
                     stageNext[entityIdx, i]['origin'] = origin
                     entityIdx += 1
@@ -198,10 +213,12 @@ class Stage(vdf.VDFDict):
 
 stageMain = Stage(stage0)
 stageNext = Stage(stage1)
+print(stageMain.idMax())
 
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
-
+print(stageMain.idMax())
+print(stageNext.ids())
 stageNext = Stage(stage2)
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
