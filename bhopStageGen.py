@@ -10,6 +10,8 @@ stage0 = r'stages\stage_001.vmf'
 stage1 = r'stages\stage_002.vmf'
 stage2 = stage0
 stage3 = stage1
+stageSleek1 = r'C:\Users\Alec\Documents\maps\sleek2.vmf'
+stageSleek2 = r'C:\Users\Alec\Documents\maps\sleek2.vmf'
 
 # stripParenth = r"\((.*?)\)"
 # regexVertex = r"\(?(\d+\.?\d*)\s(\d+\.?\d*)\s(\d+\.?\d*)\)?"
@@ -137,6 +139,8 @@ class Stage(vdf.VDFDict):
         idCount = 0
 
         del stageNext[self.entranceIndex(), 'entity']
+        del stageNext['world']['id']
+        stageNext['world']['id'] = 2
 
         if hasattr(stageNext, 'iteritems'):
             solidIdx = 0
@@ -164,7 +168,9 @@ class Stage(vdf.VDFDict):
                             sideIdx = 0
 
                 if i == 'entity':
+                    solidIdx = 0
                     idCount += 1
+                    origin = False
                     for x, n in j.iteritems():
                         if x == 'origin':
                             origin = translateOrigin(n, delta)
@@ -187,8 +193,9 @@ class Stage(vdf.VDFDict):
 
                     del stageNext[entityIdx, i]['id']
                     stageNext[entityIdx, i]['id'] = stageIDs + 1 + idCount
-                    del stageNext[entityIdx, i]['origin']
-                    stageNext[entityIdx, i]['origin'] = origin
+                    if origin:
+                        del stageNext[entityIdx, i]['origin']
+                        stageNext[entityIdx, i]['origin'] = origin
                     entityIdx += 1
             del(stageNext['cameras'], stageNext['cordon'], stageNext['visgroups'],
                 stageNext['viewsettings'], stageNext['versioninfo'])
@@ -211,19 +218,23 @@ class Stage(vdf.VDFDict):
 
 
 
-stageMain = Stage(stage0)
-stageNext = Stage(stage1)
-print(stageMain.idMax())
+# stageMain = Stage(stage0)
+# stageNext = Stage(stage1)
 
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
-print(stageMain.idMax())
-print(stageNext.ids())
-stageNext = Stage(stage2)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
-stageNext = Stage(stage3)
+# stageNext = Stage(stage2)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
+
+# stageNext = Stage(stage3)
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
+
+stageMain = Stage(stageSleek1)
+stageNext = Stage(stageSleek2)
+
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
 
