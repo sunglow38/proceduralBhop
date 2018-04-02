@@ -41,7 +41,6 @@ def translatePlane(data, xyz):
 
     return vertex
 
-
 def translateOrigin(data, xyz):
     coord = data.split(' ')
     coord = np.array(
@@ -50,15 +49,6 @@ def translateOrigin(data, xyz):
     coord = map(str, coord)
     coord = ' '.join(coord)
     return coord
-
-
-# planeS = "(0 0 0)"
-planeS = "(0 125 0) (13 0 0) (0.5 0 0)"
-originS = "0 12.3 124"
-planeC = translatePlane(planeS, [1, 20, 30])
-originC = translateOrigin(originS,[1, 20, 30])
-print("Plane Class: ", planeC)
-print("Origin Class: ", originC)
 
 class Stage(vdf.VDFDict):
 
@@ -169,6 +159,19 @@ class Stage(vdf.VDFDict):
                     for x, n in j.iteritems():
                         if x == 'origin':
                             origin = translateOrigin(n, delta)
+                        if x == 'solid':
+                            for m, x in n.iteritems():
+                                if m == 'side':
+                                    for p, v in zip(x.iterkeys(), x.itervalues()):
+                                        if p == 'plane':
+                                            newPlane = translatePlane(v, delta)
+                                    del stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane']
+                                    stageNext[entityIdx, i][solidIdx,'solid'][sideIdx, 'side']['plane'] = newPlane
+                            del stageNext[entityIdx, i][solidIdx, 'solid']['id']
+                            stageNext[entityIdx, i][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx
+                            solidIdx += 1
+                            sideIdx = 0
+
                     del stageNext[entityIdx, i]['origin']
                     stageNext[entityIdx, i]['origin'] = origin
                     entityIdx += 1
