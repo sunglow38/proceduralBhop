@@ -17,25 +17,46 @@ stage3 = stage1
 
 
 
-def vertexArray(data):
-    regexPlane = re.compile(r"""
-                                (\d+\.?\d*)\s #X [Group 0]
-                                (\d+\.?\d*)\s #Y [Group 1]
-                                (\d+\.?\d*) #Z [Group 2]
-                                """, re.VERBOSE)
+def translatePlane(data, xyz):
+    # regexPlane = re.compile(r"""
+    #                             (\d+\.?\d*)\s #X [Group 0]
+    #                             (\d+\.?\d*)\s #Y [Group 1]
+    #                             (\d+\.?\d*) #Z [Group 2]
+    #                             """, re.VERBOSE)
     stripParenth = re.compile(r"\((.*?)\)")
     vertex = stripParenth.findall(data) #The first character in string is skipped to check whether its a plane or origin object
     if vertex:
-        return vertex
+        for i in range(0, len(vertex)):
+            coord = vertex[i]
+            coord = coord.split(' ')
+            coord = np.array(
+                list(map(float, coord)))
+            coord = coord + xyz
+            coord = map(str, coord)
+            coord = ' '.join(coord)
+            coord = re.sub(
+                r".*", r'(\g<0>)', coord)
+            vertex[i] = coord
+        vertex = ' '.join(vertex)
 
-    return 0
+    return vertex
+
+
+def translateOrigin(data, xyz):
+    coord = data.split(' ')
+    coord = np.array(
+        list(map(float, coord)))
+    coord = coord + xyz
+    coord = map(str, coord)
+    coord = ' '.join(coord)
+    return coord
 
 
 # planeS = "(0 0 0)"
 planeS = "(0 125 0) (13 0 0) (0.5 0 0)"
 originS = "0 12.3 124"
-planeC = vertexArray(planeS)
-originC = vertexArray(originS)
+planeC = translatePlane(planeS, [1, 20, 30])
+originC = translateOrigin(originS,[1, 20, 30])
 print("Plane Class: ", planeC)
 print("Origin Class: ", originC)
 
@@ -73,7 +94,7 @@ class Stage(vdf.VDFDict):
                     for k in j.itervalues():
                         if k == 'entry':
                             entryOrigin = j['origin'].split(' ')
-                            entryOrigin = np.array(list(map(int, entryOrigin)))
+                            entryOrigin = np.array(list(map(float, entryOrigin)))
                             return{'idx': idx, 'entryOrigin': entryOrigin}
                     idx += 1
 
@@ -91,7 +112,7 @@ class Stage(vdf.VDFDict):
                     for k in j.itervalues():
                         if k == 'exit':
                             exitOrigin = j['origin'].split(' ')
-                            exitOrigin = np.array(list(map(int, exitOrigin)))
+                            exitOrigin = np.array(list(map(float, exitOrigin)))
                             return{'idx': idx, 'exitOrigin': exitOrigin}
                     idx += 1
 
@@ -116,7 +137,7 @@ class Stage(vdf.VDFDict):
 
     # If stageA -> stageB then command would be stageA.prepare_next(stageB)
     def prepare_next(self, stageNext):
-        stripParenth = r"\((.*?)\)"
+        # stripParenth = r"\((.*?)\)"
         delta = self.exitOrigin() - stageNext.entranceOrigin()
         stageWorld = Stage(self['world'])
         idCount = stageWorld.idMax()
@@ -135,22 +156,9 @@ class Stage(vdf.VDFDict):
                                 if m == 'side':
                                     for p, v in zip(x.iterkeys(), x.itervalues()):
                                         if p == 'plane':
-                                            vertex = re.findall(stripParenth, v)
-                                            if vertex:
-                                                for i in range(0, len(vertex)):
-                                                    coord = vertex[i]
-                                                    coord = coord.split(' ')
-                                                    coord = np.array(
-                                                        list(map(int, coord)))
-                                                    coord = coord + delta
-                                                    coord = map(str, coord)
-                                                    coord = ' '.join(coord)
-                                                    coord = re.sub(
-                                                        r".*", r'(\g<0>)', coord)
-                                                    vertex[i] = coord
-                                                vertex = ' '.join(vertex)
+                                            newPlane = translatePlane(v, delta)
                                     del stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane']
-                                    stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane'] = vertex
+                                    stageNext['world'][solidIdx,'solid'][sideIdx, 'side']['plane'] = newPlane
                                     sideIdx += 1
                             del stageNext['world'][solidIdx, 'solid']['id']
                             stageNext['world'][solidIdx, 'solid']['id'] = idCount + 1 + solidIdx
@@ -160,11 +168,7 @@ class Stage(vdf.VDFDict):
                 if i == 'entity':
                     for x, n in j.iteritems():
                         if x == 'origin':
-                            origin = n.split(' ')
-                            origin = np.array(list(map(int, origin)))
-                            origin = origin + delta
-                            origin = map(str, origin)
-                            origin = ' '.join(origin)
+                            origin = translateOrigin(n, delta)
                     del stageNext[entityIdx, i]['origin']
                     stageNext[entityIdx, i]['origin'] = origin
                     entityIdx += 1
@@ -189,20 +193,20 @@ class Stage(vdf.VDFDict):
 
 
 
-# stageMain = Stage(stage0)
-# stageNext = Stage(stage1)
+stageMain = Stage(stage0)
+stageNext = Stage(stage1)
 
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
 
-# stageNext = Stage(stage2)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
+stageNext = Stage(stage2)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
 
-# stageNext = Stage(stage3)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
+stageNext = Stage(stage3)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
 
-# open(r'stages\stageGen.vmf', 'w').close()
-# vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
+open(r'stages\stageGen.vmf', 'w').close()
+vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
 print("--- %s seconds ---" % (time.time() - start_time))
