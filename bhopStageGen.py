@@ -218,25 +218,25 @@ class Stage(vdf.VDFDict):
 
 
 
-# stageMain = Stage(stage0)
-# stageNext = Stage(stage1)
-
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
-
-# stageNext = Stage(stage2)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
-
-# stageNext = Stage(stage3)
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
-
-stageMain = Stage(stageSleek1)
-stageNext = Stage(stageSleek2)
+stageMain = Stage(stage0)
+stageNext = Stage(stage1)
 
 stageNext = stageMain.prepare_next(stageNext)
 stageMain = stageMain.append_stage(stageNext)
+
+stageNext = Stage(stage2)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
+
+stageNext = Stage(stage3)
+stageNext = stageMain.prepare_next(stageNext)
+stageMain = stageMain.append_stage(stageNext)
+
+# stageMain = Stage(stageSleek1)
+# stageNext = Stage(stageSleek2)
+
+# stageNext = stageMain.prepare_next(stageNext)
+# stageMain = stageMain.append_stage(stageNext)
 
 open(r'stages\stageGen.vmf', 'w').close()
 vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
