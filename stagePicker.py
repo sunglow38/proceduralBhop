@@ -11,13 +11,12 @@ outDir = stageDir + r'output_stages\\'
 
 
 def pickTheme(tFile=None):
+    themes = []
     if tFile: ##TODO: Let user choose to use a file containing a theme on each line
-        open(r'tFile', 'r')
-    else:
-        themeList = filter(reStage.match, os.listdir(initDir))
-        themeList = list(themeList)
-
-    return themeList
+        for line in open(tFile):
+            themes.append(line.rstrip())
+    themeChoice = random.choice(themes)
+    return themeChoice
 
 
 def pickSegment(theme):
@@ -31,4 +30,4 @@ def pickSegment(theme):
 
     return segStage
 
-print(pickTheme())
+print(pickTheme('themes.txt'))
