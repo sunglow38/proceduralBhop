@@ -1,3 +1,7 @@
+Let user choose seamless or collaborator mode
+Seamless mode
+    find
+
 add vertex class
     An XYZ location given by 3 decimal values separated by spaces.
 
@@ -16,4 +20,52 @@ Side IDs must be unique
 Entity IDs must be a unique number among other entity ids. (including world [id = 1])
 
 
+"""
+	int* pSurfEdges = &dsurfedges[pFace->firstedge];
+	int vertexIdx = (pSurfEdges[0] < 0);
+	int firstVertexIndex = dedges[abs(pSurfEdges[0])].v[vertexIdx];
+	dvertex_t* pFirstVertex = &dvertexes[firstVertexIndex];
+	for (int i = 1; i < pFace->numedges - 1; ++i )
+"""
+User arguments / Options
+    Stage Directory
+    theme/unthemed
+    seamless/seamed
+    Segment Count
+    Choose Starting Stage [true/false]
+    choose final stage [true/false]
 
+Requirements for 1.0 release - Little user input required after stage generation
+    Let a user choose a file directory containing vmf files
+    Each vmf file follows a list of Requirements
+        the file is uniquely named
+        each named entity follows the format "filename_namedentity"
+            for instance a map named 'jump' with an teleport destination entity named 'checkpoint01'
+                must instead name the entity 'jump_checkpoint01'
+        the map is connected
+        the map contains no spawns
+        the map contains a starting info_teleport_destination uniquely named "filename_start"
+        the map contains an ending teleport entity generically named 'exit'
+        the map contains a skip brush tied to an entity generically named 'bounds'
+            this entity must encompass the entire map
+    Let a user choose how many stages their map should be
+    (optional) Let a user choose a starting room stage
+    (optional) Let a user choose a final room stage
+    Choose stages at random and set the exit teleport destination of the preceding stage
+        to 'currentStage_start'
+    Set the teleport destination of the spawn room to 'firstStage_start'
+    Finally: Set the last stage Exit teleport name to 'final'
+        So that the user can easily find the end of the map
+
+Seamless Requirements 1.0 - Some user input required after stage generation
+    Choose file directory
+        each map in file dir
+            must have info_null named 'entry' and 'exit' following template
+            let user choose segment Count
+            each map the same transition piece
+        generate stage
+        user adds intro/out
+
+
+Chapters 9,10,11,12,13
+    Monday
