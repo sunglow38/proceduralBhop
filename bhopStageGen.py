@@ -1,25 +1,12 @@
 import re
-import time
 
 import numpy as np
 import vdf
 
-start_time = time.time()
-
-stage0 = r'stages\stage_001.vmf'
-stage1 = r'stages\stage_002.vmf'
-stage2 = stage0
-stage3 = stage1
-stageSleek1 = r'C:\Users\Alec\Documents\maps\sleek2.vmf'
-stageSleek2 = r'C:\Users\Alec\Documents\maps\sleek2.vmf'
-
-# stripParenth = r"\((.*?)\)"
-# regexVertex = r"\(?(\d+\.?\d*)\s(\d+\.?\d*)\s(\d+\.?\d*)\)?"
-# regexPlane = r"(\(\d+\.?\d*\s\d+\.?\d*\s\d+\.?\d*\))+"
-
-
 
 def translatePlane(data, xyz):
+    '''translatePlane(plane, vertex array)
+        Takes an array in the format of a Vertex (X Y Z) and adds it to a Plane'''
     # regexPlane = re.compile(r"""
     #                             (\d+\.?\d*)\s #X [Group 0]
     #                             (\d+\.?\d*)\s #Y [Group 1]
@@ -132,13 +119,13 @@ class Stage(vdf.VDFDict):
 
     # If stageA -> stageB then command would be stageA.prepare_next(stageB)
     def prepare_next(self, stageNext):
-        # stripParenth = r"\((.*?)\)"
         delta = self.exitOrigin() - stageNext.entranceOrigin()
         stageWorld = Stage(self['world'])
         stageIDs = stageWorld.idMax()
+        #Solid and Side ID's start at the max of the previous stage so that each ID is unique
         idCount = 0
 
-        del stageNext[self.entranceIndex(), 'entity']
+        del stageNext[stageNext.entranceIndex(), 'entity']
 
         if hasattr(stageNext, 'iteritems'):
             solidIdx = 0
@@ -215,29 +202,3 @@ class Stage(vdf.VDFDict):
             stage['entity'] = i
 
         return stage
-
-
-
-stageMain = Stage(stage0)
-stageNext = Stage(stage1)
-
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
-
-stageNext = Stage(stage2)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
-
-stageNext = Stage(stage3)
-stageNext = stageMain.prepare_next(stageNext)
-stageMain = stageMain.append_stage(stageNext)
-
-# stageMain = Stage(stageSleek1)
-# stageNext = Stage(stageSleek2)
-
-# stageNext = stageMain.prepare_next(stageNext)
-# stageMain = stageMain.append_stage(stageNext)
-
-open(r'stages\stageGen.vmf', 'w').close()
-vdf.dump(stageMain, open(r'stages\stageGen.vmf', 'w'), pretty=True)
-print("--- %s seconds ---" % (time.time() - start_time))

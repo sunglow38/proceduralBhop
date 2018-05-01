@@ -31,3 +31,4 @@ def pickSegment(theme):
     return segStage
 
 print(pickTheme('themes.txt'))
+

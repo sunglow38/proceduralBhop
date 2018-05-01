@@ -8,5 +8,5 @@ __pycache__/
 
 #custom
 flowchart.txt
-stages/stageGen.vmf
-stages/output_stages/
+stages/
+

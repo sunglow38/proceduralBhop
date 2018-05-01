@@ -67,5 +67,7 @@ Seamless Requirements 1.0 - Some user input required after stage generation
         user adds intro/out
 
 
-Chapters 9,10,11,12,13
-    Monday
+###IMPORTANT###
+info_teleport_destination - names must be unique in output map
+    along with accompanying 'remote destinations'
+    --> This should be doable with a look an replace script
